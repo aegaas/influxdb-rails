@@ -54,9 +54,12 @@ module InfluxDB
           env = influxdb_request_data if env.empty? && defined? influxdb_request_data
           exception_presenter = ExceptionPresenter.new(e, env)
           log :info, "Exception: #{exception_presenter.to_json[0..512]}..."
-
+					
           client.write_point "rails.exceptions",
-            exception_presenter.context.merge(exception_presenter.dimensions)
+            values: {
+              value: 1
+            },
+            tags: exception_presenter.dimensions
 
         rescue => e
           log :info, "[InfluxDB::Rails] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
